@@ -78,7 +78,7 @@ export function PersonaSwitcher({ role }: { role: "staff" | "admin" | "operator"
 function PersonaSheetBody({
   locale,
   pathname,
-  onClose,
+  onClose: _onClose,
   onContinue,
   onLoginAs,
   onLogout,
@@ -90,6 +90,7 @@ function PersonaSheetBody({
   onLoginAs: (role: "staff" | "admin" | "operator") => Promise<void>;
   onLogout: () => Promise<void>;
 }) {
+  void _onClose;
   return (
     <SheetContent side="bottom" className="max-h-[86vh] rounded-t-[2rem] border-t border-border bg-[rgba(6,10,18,0.96)] px-0 pb-8 pt-0 text-white backdrop-blur-3xl">
       <SheetHeader className="border-b border-white/6 px-5 pb-4 pt-5">
