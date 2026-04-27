@@ -1,36 +1,201 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CrisisSync
 
-## Getting Started
+AI-native emergency coordination for hospitality venues.
 
-First, run the development server:
+CrisisSync helps hotels, resorts, and venue teams move from guest-reported incidents to coordinated staff response in seconds. It combines a guest-friendly reporting flow, realtime staff/admin dashboards, and Gemini-powered triage so operators can make faster, clearer decisions under pressure.
+
+## Why This Matters
+
+Hospitality incidents are chaotic for everyone involved:
+- Guests do not know where to report or what details matter.
+- Staff need immediate, structured response guidance.
+- Managers need a live operational view, not fragmented updates.
+
+CrisisSync turns that into one flow:
+- Guest submits a report, optionally with photo evidence.
+- Gemini analyzes the situation and produces severity, reasoning, instructions, and response protocol.
+- Staff sees the incident instantly and can take ownership.
+- Admin monitors, reassigns, and reviews AI-backed operational context.
+- Incident closure generates structured post-incident reporting.
+
+## Key Features
+
+- Premium public experience with customer-facing website assistant
+- Mobile-friendly guest crisis reporting flow
+- Gemini multimodal triage using text plus optional photo evidence
+- AI outputs with severity, reasoning, confidence, responder focus, and prevention insights
+- Realtime staff dashboard for active response coordination
+- Admin command center with analytics, staffing visibility, and incident detail
+- Demo-safe fallback data so the product still presents well in a live hackathon environment
+
+## Product Surfaces
+
+- `/`
+  Marketing landing page
+- `/report`
+  Guest reporting flow
+- `/report/[id]/status`
+  Guest status tracking
+- `/login`
+  Staff/admin sign-in and demo access
+- `/staff/dashboard`
+  Responder workspace
+- `/admin/dashboard`
+  Command center
+- `/admin/analytics`
+  Incident analytics
+
+## AI Features
+
+Gemini powers:
+- Incident severity classification
+- Category confirmation
+- Guest safety instructions
+- Staff response checklist
+- Visual scene analysis from uploaded photos
+- Confidence and reasoning output
+- Responder focus guidance
+- Prevention recommendations
+- Post-incident report generation
+- Customer-facing website concierge assistant
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A["Guest / Visitor"] --> B["Next.js App Router UI"]
+    B --> C["API Routes"]
+    C --> D["Gemini 2.0 Flash"]
+    C --> E["Supabase"]
+
+    E --> F["Crises"]
+    E --> G["Crisis Updates"]
+    E --> H["Checklist Items"]
+    E --> I["Incident Reports"]
+    E --> J["Profiles / Staff Availability"]
+
+    F --> K["Staff Dashboard"]
+    F --> L["Admin Command Center"]
+    G --> L
+    H --> K
+    I --> L
+
+    D --> C
+    E --> M["Realtime Channels"]
+    M --> K
+    M --> L
+```
+
+## Tech Stack
+
+- Next.js 14
+- React 18
+- TypeScript
+- Tailwind CSS v4
+- Framer Motion
+- Supabase
+- Google Gemini via `@google/generative-ai`
+- Recharts
+
+## Local Setup
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Create `.env.local` with:
+
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+GEMINI_API_KEY=...
+GROQ_API_KEY=...
+NEXT_PUBLIC_APP_URL=...
+DEMO_SEED_SECRET=...
+```
+
+3. Run the app:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Supabase
 
-## Learn More
+Schema setup is in [migration.sql](C:\Users\mssne\Desktop\Crisis_gdg\supabase\migration.sql).
 
-To learn more about Next.js, take a look at the following resources:
+The app includes demo-safe fallback data in [demo-data.ts](C:\Users\mssne\Desktop\Crisis_gdg\src\lib\demo-data.ts), which helps keep dashboards and flows presentable even when the database is empty during a live demo.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Demo Story
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The strongest demo path is:
 
-## Deploy on Vercel
+1. Open the landing page and explain the hospitality problem.
+2. Show the customer-facing assistant.
+3. Open `/v/grand-meridian` or scan the seeded QR path and submit a guest crisis report with optional photo evidence.
+4. Let the app route to `/report/[id]/status` and highlight Gemini severity, instructions, and live progress.
+5. Open the staff dashboard and take ownership of the incident.
+6. Open the admin dashboard and show command-level visibility, retriage, and resolution.
+7. Open the generated incident report and close on prevention insights.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Demo Ops
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Before any live demo:
+
+1. Open `/status` and confirm Supabase + Gemini + Groq are online.
+2. Seed the canonical demo venue with:
+
+```bash
+curl -X POST http://localhost:3000/api/demo/seed -H "x-demo-seed-secret: <DEMO_SEED_SECRET>"
+```
+
+3. Use the seeded public entry:
+
+```text
+/v/grand-meridian
+```
+
+4. Keep the golden flow limited to:
+
+```text
+/ -> /v/grand-meridian -> /report/[id]/status -> /staff/dashboard -> /admin/dashboard -> /admin/reports/[reportId]
+```
+
+If seeding is unavailable, the app still contains fallback demo-safe UI data for presentation, but the best judge experience is the seeded live flow above.
+
+## What Makes This a Strong Hackathon Project
+
+- Clear real-world problem
+- Strong end-to-end narrative
+- Real AI utility, not decoration
+- Realtime coordination story
+- Premium UI polish
+- Presentation-safe fallback behavior
+
+## Scripts
+
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
+
+## Status
+
+Current state:
+- Product redesign completed
+- Gemini website assistant added
+- Demo reliability pass completed
+- Multimodal image triage completed
+- AI reasoning and prevention insights completed
+- Hackathon submission docs in progress
