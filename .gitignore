@@ -31,7 +31,8 @@ tsc_errors*.txt
 build_output*.txt
 
 # local env files
-.env*.local
+.env
+.env.*
 
 # vercel
 .vercel
