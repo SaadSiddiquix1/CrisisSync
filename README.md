@@ -1,8 +1,8 @@
 # CrisisSync
 
-AI-native emergency coordination for hospitality venues.
+Crisis coordination for hospitality venues.
 
-CrisisSync helps hotels, resorts, and venue teams move from guest-reported incidents to coordinated staff response in seconds. It combines a guest-friendly reporting flow, realtime staff/admin dashboards, and Gemini-powered triage so operators can make faster, clearer decisions under pressure.
+CrisisSync helps hotels, resorts, and venue teams move from guest-reported incidents to coordinated response in seconds. It combines a guest-friendly reporting flow, realtime staff/admin dashboards, and automated triage/guidance (with optional photo analysis) so operators can make faster, clearer decisions under pressure.
 
 ## Table of Contents
 
@@ -40,7 +40,7 @@ CrisisSync turns that into one flow:
 - AI outputs with severity, reasoning, confidence, responder focus, and prevention insights
 - Realtime staff dashboard for active response coordination
 - Admin command center with analytics, staffing visibility, and incident detail
-- Demo-safe fallback data so the product still presents well in a live hackathon environment
+- Demo-safe fallback data so the product still presents well even when the database is empty
 
 ## Product Surfaces
 
@@ -157,7 +157,7 @@ erDiagram
 
 ```text
 .
-├─ docs/                      # Demo + product docs (hackathon kit, runbook, SaaS direction)
+├─ docs/                      # Demo + product docs (runbook, product direction)
 ├─ public/                    # Static assets
 ├─ src/
 │  ├─ app/                    # Next.js App Router routes (UI + API)
@@ -266,14 +266,11 @@ curl -X POST http://localhost:3000/api/demo/seed -H "x-demo-seed-secret: <DEMO_S
 
 If seeding is unavailable, the app still contains fallback demo-safe UI data for presentation, but the best judge experience is the seeded live flow above.
 
-## What Makes This a Strong Hackathon Project
+## Notes for Demos
 
-- Clear real-world problem
-- Strong end-to-end narrative
-- Real AI utility, not decoration
-- Realtime coordination story
-- Premium UI polish
-- Presentation-safe fallback behavior
+- Keep `/status` open to verify integrations quickly
+- Use the seeded venue slug (`grand-meridian`) for the smoothest end-to-end walkthrough
+- If external services are slow/offline, present the coordination workflow using demo-safe fallback data
 
 ## Scripts
 
@@ -290,7 +287,7 @@ For a judge-friendly flow and recovery options if any dependency is flaky, see [
 
 ## Docs
 
-- [`docs/hackathon-kit.md`](docs/hackathon-kit.md): pitches, demo script, judge talking points
+- [`docs/hackathon-kit.md`](docs/hackathon-kit.md): pitches, demo script, judge talking points (legacy)
 - [`docs/demo-runbook.md`](docs/demo-runbook.md): pre-demo checklist, credentials, golden flow
 - [`docs/saas-architecture.md`](docs/saas-architecture.md): suggested multi-tenant SaaS direction
 
@@ -302,4 +299,10 @@ Current state:
 - Demo reliability pass completed
 - Multimodal image triage completed
 - AI reasoning and prevention insights completed
-- Hackathon submission docs in progress
+
+## Closing Notes
+
+If you deploy this beyond a demo, make sure you:
+- keep `SUPABASE_SERVICE_ROLE_KEY` server-only (never expose it to the browser)
+- rotate any leaked keys immediately and use least-privilege tokens
+- review Supabase RLS policies before enabling real users
