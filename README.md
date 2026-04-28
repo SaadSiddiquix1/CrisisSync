@@ -266,7 +266,7 @@ curl -X POST http://localhost:3000/api/demo/seed -H "x-demo-seed-secret: <DEMO_S
 
 If seeding is unavailable, the app still contains fallback demo-safe UI data for presentation, but the best judge experience is the seeded live flow above.
 
-## What Makes This a Strong Hackathon Project
+## What Makes This stand out!
 
 - Clear real-world problem
 - Strong end-to-end narrative
@@ -303,3 +303,10 @@ Current state:
 - Multimodal image triage completed
 - AI reasoning and prevention insights completed
 - Hackathon submission docs in progress
+- some pages are not fully published yet, but all the main part is working
+
+
+## Thankyou for checking this out, I truly Appreciate it.
+
+
+no licences whatsoever, solo project, used gemini 3.1 pro heavily.
