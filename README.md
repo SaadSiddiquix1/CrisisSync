@@ -303,7 +303,6 @@ Current state:
 - Demo reliability pass completed
 - Multimodal image triage completed
 - AI reasoning and prevention insights completed
-- Hackathon submission docs in progress
 - some pages are not fully published yet, but all the main part is working
 
 
