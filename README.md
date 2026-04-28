@@ -4,6 +4,20 @@ AI-native emergency coordination for hospitality venues.
 
 CrisisSync helps hotels, resorts, and venue teams move from guest-reported incidents to coordinated staff response in seconds. It combines a guest-friendly reporting flow, realtime staff/admin dashboards, and Gemini-powered triage so operators can make faster, clearer decisions under pressure.
 
+## Table of Contents
+
+- [Why This Matters](#why-this-matters)
+- [Key Features](#key-features)
+- [Product Surfaces](#product-surfaces)
+- [Architecture](#architecture)
+- [Repository Structure](#repository-structure)
+- [Tech Stack](#tech-stack)
+- [Local Setup](#local-setup)
+- [Supabase](#supabase)
+- [Demo Runbook](#demo-runbook)
+- [Scripts](#scripts)
+- [Docs](#docs)
+
 ## Why This Matters
 
 Hospitality incidents are chaotic for everyone involved:
@@ -86,6 +100,86 @@ flowchart TD
     M --> L
 ```
 
+### Primary Flows
+
+Guest → staff/admin coordination:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Guest
+    participant Web as Next.js UI
+    participant API as Next.js API Routes
+    participant AI as Gemini
+    participant DB as Supabase
+    participant RT as Realtime
+    actor Staff
+    actor Admin
+
+    Guest->>Web: Create incident report (+ optional photo)
+    Web->>API: POST /api/crisis (report payload)
+    API->>AI: Multimodal triage (text + image)
+    AI-->>API: Severity + instructions + checklist + reasoning
+    API->>DB: Persist crisis + triage result
+    DB-->>RT: Broadcast incident update
+    RT-->>Staff: Staff dashboard updates in realtime
+    RT-->>Admin: Admin dashboard updates in realtime
+    Staff->>Web: Claim incident + update checklist/status
+    Web->>API: PATCH/POST updates
+    API->>DB: Persist updates
+    DB-->>RT: Broadcast progress updates
+    RT-->>Guest: Status page reflects live progress
+```
+
+### Data Model (Conceptual)
+
+This is the operational core the UI and realtime updates revolve around:
+
+```mermaid
+erDiagram
+    CRISES ||--o{ CRISIS_UPDATES : has
+    CRISES ||--o{ CHECKLIST_ITEMS : has
+    CRISES ||--o{ INCIDENT_REPORTS : generates
+    PROFILES ||--o{ CRISES : "assigned_to"
+
+    CRISES {
+      uuid id
+      text venue_slug
+      text category
+      text severity
+      text status
+      jsonb ai_triage_result
+      timestamptz created_at
+    }
+```
+
+## Repository Structure
+
+```text
+.
+├─ docs/                      # Demo + product docs (hackathon kit, runbook, SaaS direction)
+├─ public/                    # Static assets
+├─ src/
+│  ├─ app/                    # Next.js App Router routes (UI + API)
+│  │  ├─ api/                 # Server routes (Gemini, Supabase orchestration)
+│  │  ├─ admin/               # Admin command center + analytics
+│  │  ├─ staff/               # Staff responder dashboard
+│  │  ├─ report/              # Guest reporting + status tracking
+│  │  ├─ status/              # Health page (Supabase/Gemini/Groq)
+│  │  └─ v/                   # Public venue entry (seeded demo slug lives here)
+│  ├─ components/             # Shared UI building blocks
+│  ├─ hooks/                  # Reusable React hooks
+│  ├─ lib/                    # Supabase clients, AI helpers, demo data, utilities
+│  ├─ types/                  # Shared TypeScript types
+│  └─ middleware.ts           # Route protection + auth routing
+├─ supabase/
+│  ├─ migrations/             # Supabase migration history
+│  └─ migration.sql           # Reference schema + policies snapshot
+├─ .env.local.example         # Environment variable template (safe to commit)
+├─ SETUP.md                   # Step-by-step setup + demo instructions
+└─ package.json
+```
+
 ## Tech Stack
 
 - Next.js 14
@@ -131,9 +225,9 @@ http://localhost:3000
 
 ## Supabase
 
-Schema setup is in [migration.sql](C:\Users\mssne\Desktop\Crisis_gdg\supabase\migration.sql).
+Schema setup is in [`supabase/migrations/001_saas_schema.sql`](supabase/migrations/001_saas_schema.sql) (recommended) and a reference snapshot exists at [`supabase/migration.sql`](supabase/migration.sql).
 
-The app includes demo-safe fallback data in [demo-data.ts](C:\Users\mssne\Desktop\Crisis_gdg\src\lib\demo-data.ts), which helps keep dashboards and flows presentable even when the database is empty during a live demo.
+The app includes demo-safe fallback data in [`src/lib/demo-data.ts`](src/lib/demo-data.ts), which helps keep dashboards and flows presentable even when the database is empty during a live demo.
 
 ## Demo Story
 
@@ -189,6 +283,16 @@ npm run build
 npm run start
 npm run lint
 ```
+
+## Demo Runbook
+
+For a judge-friendly flow and recovery options if any dependency is flaky, see [`docs/demo-runbook.md`](docs/demo-runbook.md).
+
+## Docs
+
+- [`docs/hackathon-kit.md`](docs/hackathon-kit.md): pitches, demo script, judge talking points
+- [`docs/demo-runbook.md`](docs/demo-runbook.md): pre-demo checklist, credentials, golden flow
+- [`docs/saas-architecture.md`](docs/saas-architecture.md): suggested multi-tenant SaaS direction
 
 ## Status
 
