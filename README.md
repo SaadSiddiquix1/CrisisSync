@@ -41,6 +41,7 @@ CrisisSync turns that into one flow:
 - Realtime staff dashboard for active response coordination
 - Admin command center with analytics, staffing visibility, and incident detail
 - Demo-safe fallback data so the product still presents well in a live hackathon environment
+- Even if one AI fails mid-crisis, the system never goes down.
 
 ## Product Surfaces
 
